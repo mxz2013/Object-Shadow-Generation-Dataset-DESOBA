@@ -12,15 +12,24 @@ import os
 import os.path
 
 IMG_EXTENSIONS = [
-    '.jpg', '.JPG', '.jpeg', '.JPEG',
-    '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP',
+    ".jpg",
+    ".JPG",
+    ".jpeg",
+    ".JPEG",
+    ".png",
+    ".PNG",
+    ".ppm",
+    ".PPM",
+    ".bmp",
+    ".BMP",
 ]
 
 
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
 
-'''
+
+"""
 def make_dataset(dir):
     images = []
     assert os.path.isdir(dir), '%s is not a valid directory' % dir
@@ -32,11 +41,13 @@ def make_dataset(dir):
                 images.append(path)
 
     return images
-'''
+"""
+
+
 def make_dataset(dir):
     images = []
     imname = []
-    assert os.path.isdir(dir), '%s is not a valid directory' % dir
+    assert os.path.isdir(dir), "%s is not a valid directory" % dir
 
     for root, _, fnames in sorted(os.walk(dir)):
         for fname in fnames:
@@ -44,21 +55,23 @@ def make_dataset(dir):
                 path = os.path.join(root, fname)
                 images.append(path)
                 imname.append(fname)
-    return images,imname
+    return images, imname
+
 
 def default_loader(path):
-    return Image.open(path).convert('RGB')
+    return Image.open(path).convert("RGB")
 
 
 class ImageFolder(data.Dataset):
-
-    def __init__(self, root, transform=None, return_paths=False,
-                 loader=default_loader):
+    def __init__(self, root, transform=None, return_paths=False, loader=default_loader):
         imgs = make_dataset(root)
         if len(imgs) == 0:
-            raise(RuntimeError("Found 0 images in: " + root + "\n"
-                               "Supported image extensions are: " +
-                               ",".join(IMG_EXTENSIONS)))
+            raise (
+                RuntimeError(
+                    "Found 0 images in: " + root + "\n"
+                    "Supported image extensions are: " + ",".join(IMG_EXTENSIONS)
+                )
+            )
 
         self.root = root
         self.imgs = imgs

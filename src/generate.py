@@ -12,28 +12,29 @@ import numpy as np
 import math
 import torch
 
-opt = TestOptions().parse()
-data_loader = CreateDataLoader(opt)
-dataset = data_loader.load_data()
-dataset_size = len(data_loader)
-model = create_model(opt)
-model.setup(opt)
-visualizer = Visualizer(opt)
+if __name__ == '__main__':
+    opt = TestOptions().parse()
+    data_loader = CreateDataLoader(opt)
+    dataset = data_loader.load_data()
+    dataset_size = len(data_loader)
+    print("dataset size {}".format(dataset_size))
+    model = create_model(opt)
+    model.setup(opt)
+    visualizer = Visualizer(opt)
 
+    lengths = 0
+    for i, data in enumerate(dataset):
+        model.set_input(data)
+        model.prediction()
+        length, visual_dict = model.get_current_visuals()
+        visualizer.display_current_results(visual_dict, i)
+        lengths+=length
 
-lengths = 0
-for i, data in enumerate(dataset):
-    model.set_input(data)
-    model.prediction()
-    length, visual_dict = model.get_current_visuals()
-    visualizer.display_current_results(visual_dict, i)
-    lengths+=length
-
-if opt.bos:
-	print('totally {} test bos images'.format(lengths))
-elif opt.bosfree:
-	print('totally {} test bosfree images'.format(lengths))
-else:
-    print('totally {} real composite images'.format(lengths))
+    if opt.bos:
+    	print('totally {} test bos images'.format(lengths))
+    elif opt.bosfree:
+    	print('totally {} test bosfree images'.format(lengths))
+    else:
+        print('totally {} real composite images'.format(lengths))
 
 

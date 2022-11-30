@@ -17,7 +17,7 @@ sys.path.append('../pytorch_ssim/')
 import pytorch_ssim
 import torch
 from sklearn.metrics import balanced_accuracy_score
-from skimage.measure import compare_mse
+from skimage.metrics import mean_squared_error
 import util.ssim as ssim
 
 
@@ -44,6 +44,7 @@ class SGRNetModel(DistangleModel):
     def initialize(self, opt):
         BaseModel.initialize(self, opt)
         self.isTrain = opt.isTrain
+
         self.loss_names = ['rescontruction']
         self.loss_names.append('G_param')
         self.loss_names.append('G_MSP')
@@ -185,13 +186,14 @@ class SGRNetModel(DistangleModel):
 
         diff = torch.abs(self.final - self.shadowfree_img)
         diff = diff * 2 - 1
-
-        self.shadow_mask_predict = torch.zeros(self.shadow_mask.size()).cuda()
+        # self.shadow_mask_predict = torch.zeros(self.shadow_mask.size()).cuda()
+        self.shadow_mask_predict = torch.zeros(self.shadow_mask.size()).to(self.device)
         if diff.size()[0] == 1:
             diff = torch.squeeze(diff)
             diff = torchvision.transforms.ToPILImage()(diff.detach().cpu())
             self.shadow_mask_predict = torchvision.transforms.Grayscale(num_output_channels=1)(diff)
-            self.shadow_mask_predict = torchvision.transforms.ToTensor()(self.shadow_mask_predict).cuda()
+            # self.shadow_mask_predict = torchvision.transforms.ToTensor()(self.shadow_mask_predict).cuda()
+            self.shadow_mask_predict = torchvision.transforms.ToTensor()(self.shadow_mask_predict).to(self.device)
             self.shadow_mask_predict = self.shadow_mask_predict*2 - 1
             self.shadow_mask_predict = self.shadow_mask_predict.unsqueeze(0)
         else:
@@ -200,7 +202,8 @@ class SGRNetModel(DistangleModel):
                 cu_diff = detach_diff[i]
                 cu_diff = torchvision.transforms.ToPILImage()(cu_diff)
                 cu_diff = torchvision.transforms.Grayscale(num_output_channels=1)(cu_diff)
-                cu_diff = torchvision.transforms.ToTensor()(cu_diff).cuda()
+                # cu_diff = torchvision.transforms.ToTensor()(cu_diff).cuda()
+                cu_diff = torchvision.transforms.ToTensor()(cu_diff).to(self.device)
                 cu_diff = cu_diff * 2 - 1
                 self.shadow_mask_predict[i] = cu_diff.unsqueeze(0)
 
@@ -313,8 +316,8 @@ class SGRNetModel(DistangleModel):
             prediction = util.tensor2im(getattr(self, 'final').data[i:i + 1, :, :, :]).astype(np.float32)
             mask = util.tensor2imonechannel(getattr(self, 'shadow_mask').data[i:i + 1, :, :, :])
          
-            RMSE.append(math.sqrt(compare_mse(gt, prediction)))
-            shadowRMSE.append(math.sqrt(compare_mse(gt*(mask/255), prediction*(mask/255))*256*256/np.sum(mask/255)))
+            RMSE.append(math.sqrt(cmean_squared_error(gt, prediction)))
+            shadowRMSE.append(math.sqrt(mean_squared_error(gt*(mask/255), prediction*(mask/255))*256*256/np.sum(mask/255)))
             
             gt_tensor = (getattr(self, 'shadow_img').data[i:i + 1, :, :, :]/2 + 0.5) * 255
             prediction_tensor = (getattr(self, 'final').data[i:i + 1, :, :, :]/2 + 0.5) * 255

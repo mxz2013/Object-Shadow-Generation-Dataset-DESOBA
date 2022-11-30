@@ -1,4 +1,5 @@
 import importlib
+import numpy as np
 import torch.utils.data
 from data.base_data_loader import BaseDataLoader
 from data.base_dataset import BaseDataset
@@ -10,19 +11,22 @@ def find_dataset_using_name(dataset_name):
     # will be imported.
     dataset_filename = "data." + dataset_name + "_dataset"
     datasetlib = importlib.import_module(dataset_filename)
+    print("datasetlib {}".format(datasetlib.__name__))
 
     # In the file, the class called DatasetNameDataset() will
     # be instantiated. It has to be a subclass of BaseDataset,
     # and it is case-insensitive.
     dataset = None
-    target_dataset_name = dataset_name.replace('_', '') + 'dataset'
+    target_dataset_name = dataset_name.replace("_", "") + "dataset"
     for name, cls in datasetlib.__dict__.items():
-        if name.lower() == target_dataset_name.lower() \
-           and issubclass(cls, BaseDataset):
+        if name.lower() == target_dataset_name.lower() and issubclass(cls, BaseDataset):
             dataset = cls
 
     if dataset is None:
-        print("In %s.py, there should be a subclass of BaseDataset with class name that matches %s in lowercase." % (dataset_filename, target_dataset_name))
+        print(
+            "In %s.py, there should be a subclass of BaseDataset with class name that matches %s in lowercase."
+            % (dataset_filename, target_dataset_name)
+        )
         exit(0)
 
     return dataset
@@ -36,7 +40,7 @@ def get_option_setter(dataset_name):
 def create_dataset(opt):
     dataset = find_dataset_using_name(opt.dataset_mode)
     instance = dataset()
-    instance.initialize(opt)
+    instance.initialize(opt)  # eating cpu memory
     print("dataset [%s] was created" % (instance.name()))
     return instance
 
@@ -51,17 +55,23 @@ def CreateDataLoader(opt):
 # multi-threaded data loading
 class CustomDatasetDataLoader(BaseDataLoader):
     def name(self):
-        return 'CustomDatasetDataLoader'
+        return "CustomDatasetDataLoader"
 
     def initialize(self, opt):
         BaseDataLoader.initialize(self, opt)
         self.create_dataset = create_dataset
         self.dataset = self.create_dataset(opt)
+        print(
+            "SKY batch_size {}, serial_batches {}, num_threads {}".format(
+                opt.batch_size, opt.serial_batches, opt.num_threads
+            )
+        )
         self.dataloader = torch.utils.data.DataLoader(
-            self.dataset,
+            np.array(self.dataset),
             batch_size=opt.batch_size,
             shuffle=not opt.serial_batches,
-            num_workers=int(opt.num_threads))
+            num_workers=int(opt.num_threads),
+        )
 
     def load_data(self):
         return self

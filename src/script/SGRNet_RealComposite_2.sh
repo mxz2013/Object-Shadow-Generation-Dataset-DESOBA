@@ -1,7 +1,6 @@
-
 #!/bin/bash
 batchs=1
-GPU=0
+GPU=-1
 lr=0.0002
 loadSize=256
 fineSize=256
@@ -9,6 +8,7 @@ L1=100
 model=SGRNet
 G='RESNEXT18'
 ngf=32
+num_threads=4
 
 
 L_shadowrecons=10
@@ -30,8 +30,8 @@ NAME="${model_name}_G${G}_C${ngf}_D${D}_lrD${lr_D}"
 
 #####testing for real composite images
 datasetmode=ShadowGenerationDatasetInference2
-# dataroot='../../DESOBA_DATASET/CompositionShadowGeneration-100/OneforegroundObject74/'
-dataroot='../../DESOBA_DATASET/CompositionShadowGeneration-100/TwoforegroundObject26/'
+dataroot='../../DESOBA_DATASET/CompositionShadowGeneration-100/OneforegroundObject74'
+#dataroot='../../DESOBA_DATASET/CompositionShadowGeneration-100/TwoforegroundObject26/'
 shadowfree_path=${dataroot}'/shadowfree_img'
 instance_path=${dataroot}'/foreground_object_mask'
 

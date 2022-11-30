@@ -1,10 +1,10 @@
 
 #!/bin/bash
 batchs=1
-GPU=0
+GPU=-1
 lr=0.0002
-loadSize=256
-fineSize=256
+loadSize=128
+fineSize=128
 L1=100
 model=SGRNet
 G='RESNEXT18'
