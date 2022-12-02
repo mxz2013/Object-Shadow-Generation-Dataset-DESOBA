@@ -5,6 +5,8 @@ import time
 from . import util
 from . import html
 from pdb import set_trace as st
+
+
 class Visualizer():
     def __init__(self, opt):
         # self.opt = opt
@@ -19,14 +21,13 @@ class Visualizer():
             self.bos = opt.bos
             self.bosfree = opt.bosfree
 
-
         self.win_size = opt.display_winsize
         # self.name = opt.name
         self.name = opt.checkpoints_dir.split('/')[-1]
         if self.display_id > 0:
             import visdom
-            self.vis = visdom.Visdom(server = opt.display_server,port = opt.display_port)
-            #self.ncols = opt.ncols
+            self.vis = visdom.Visdom(server=opt.display_server, port=opt.display_port)
+            # self.ncols = opt.ncols
             self.ncols = opt.display_ncols
         if self.use_html:
             self.web_dir = os.path.join(opt.checkpoints_dir, opt.name, 'web')
@@ -42,8 +43,6 @@ class Visualizer():
 
             print('images are stored in {}'.format(self.img_dir))
 
-
-
             print('create web directory %s...' % self.web_dir)
             util.mkdirs([self.web_dir, self.img_dir])
         self.log_name = os.path.join(opt.checkpoints_dir, opt.name, 'loss_log.txt')
@@ -53,8 +52,8 @@ class Visualizer():
             log_file.write('================ Training Loss (%s) ================\n' % now)
 
     # |visuals|: dictionary of images to display or save
-    def display_current_results(self, visuals, epoch):
-        if self.display_id > 0: # show images in the browser
+    def display_current_results(self, visuals, epoch, filename):
+        if self.display_id > 0:  # show images in the browser
             ncols = self.ncols
             if self.ncols > 0:
                 h, w = next(iter(visuals.values())).shape[:2]
@@ -88,22 +87,22 @@ class Visualizer():
                 # pane col = image row
                 self.vis.images(images, nrow=ncols, win=self.display_id + 1,
                                 padding=2, opts=dict(title=title + ' images'))
-                #label_html = '<table>%s</table>' % label_html
-                #self.vis.text(table_css + label_html, win = self.display_id + 2,
+                # label_html = '<table>%s</table>' % label_html
+                # self.vis.text(table_css + label_html, win = self.display_id + 2,
                 #              opts=dict(title=title + ' labels'))
             else:
                 idx = 1
                 for label, image_numpy in visuals.items():
-                    self.vis.image(image_numpy.transpose([2,0,1]), opts=dict(title=label),
+                    self.vis.image(image_numpy.transpose([2, 0, 1]), opts=dict(title=label),
                                    win=self.display_id + idx)
                     idx += 1
 
-        if self.use_html: # save images to a html file
+        if self.use_html:  # save images to a html file
             for label, image_numpy in visuals.items():
                 if self.isTrain:
                     img_path = os.path.join(self.img_dir, 'epoch%.3d_%s.png' % (epoch, label))
                 else:
-                    img_path = os.path.join(self.img_dir, '%d.png' % (epoch))
+                    img_path = os.path.join(self.img_dir, '%s.png' % (filename))
                 util.save_image(image_numpy, img_path)
             # update website
             webpage = html.HTML(self.web_dir, 'Experiment name = %s' % self.name, reflesh=1)
@@ -124,11 +123,11 @@ class Visualizer():
     # errors: dictionary of error labels and values
     def plot_current_losses(self, epoch, counter_ratio, opt, errors):
         if not hasattr(self, 'plot_data_train'):
-            self.plot_data_train = {'X':[],'Y':[], 'legend':list(errors.keys())}
+            self.plot_data_train = {'X': [], 'Y': [], 'legend': list(errors.keys())}
         self.plot_data_train['X'].append(epoch + counter_ratio)
         self.plot_data_train['Y'].append([errors[k] for k in self.plot_data_train['legend']])
         self.vis.line(
-            X=np.stack([np.array(self.plot_data_train['X'])]*len(self.plot_data_train['legend']),1),
+            X=np.stack([np.array(self.plot_data_train['X'])] * len(self.plot_data_train['legend']), 1),
             Y=np.array(self.plot_data_train['Y']),
             opts={
                 'title': self.name + ' loss over time',
@@ -139,19 +138,19 @@ class Visualizer():
 
     def plot_test_errors(self, epoch, counter_ratio, opt, errors):
         if not hasattr(self, 'plot_data'):
-            self.plot_data = {'X':[],'Y':[], 'legend':list(errors.keys())}
+            self.plot_data = {'X': [], 'Y': [], 'legend': list(errors.keys())}
         self.plot_data['X'].append(epoch + counter_ratio)
         self.plot_data['Y'].append([errors[k] for k in self.plot_data['legend']])
         self.vis.line(
-            X=np.stack([np.array(self.plot_data['X'])]*len(self.plot_data['legend']),1),
+            X=np.stack([np.array(self.plot_data['X'])] * len(self.plot_data['legend']), 1),
             Y=np.array(self.plot_data['Y']),
             opts={
                 'title': self.name + ' loss over time',
                 'legend': self.plot_data['legend'],
                 'xlabel': 'epoch',
                 'ylabel': 'loss'},
-            win=self.display_id+10)
-        message = '(epoch: %d)' %(epoch)
+            win=self.display_id + 10)
+        message = '(epoch: %d)' % (epoch)
         for k, v in errors.items():
             message += '%s: %.3f ' % (k, v)
 

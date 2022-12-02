@@ -1,4 +1,3 @@
-
 #!/bin/bash
 batchs=1
 GPU=0
@@ -25,11 +24,6 @@ lr_D=0.0002
 
 #####datset selected
 datasetmode=shadowparam
-
-
-
-
-
 
 checkpoint='../../TrainedModels/Pix2pix_TrainedModel/'
 

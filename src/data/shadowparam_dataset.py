@@ -329,7 +329,7 @@ class ShadowParamDataset(BaseDataset):
         self.birdy_imlists = []
 
         for id, imname_list in enumerate(self.imname[:]):
-            print("SKY id {}".format(id + 1))
+            # print("SKY id {}".format(id + 1))
             imname = imname_list[0]
             A_img = (
                 Image.open(os.path.join(self.dir_A, imname))

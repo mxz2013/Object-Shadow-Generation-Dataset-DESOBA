@@ -1,4 +1,3 @@
-
 #!/bin/bash
 batchs=1
 GPU=-1
@@ -18,30 +17,19 @@ L_imagerecons=10
 L_GAN=0.1
 
 #####network design
-DISPLAY_PORT=8002
+DISPLAY_PORT=8097
 D='pixel'
 lr_D=0.0002
 
-
-
-
 model_name=SGRNet
-
 
 #####datset selected
 datasetmode=shadowparam
 
-
-
 NAME="${model_name}_G${G}_C${ngf}_D${D}_lrD${lr_D}"
-
-
-
 
 #aaai 2021
 checkpoint='../../TrainedModels/New_SGRNet_TrainedModel/'
-
-
 
 dataroot='../../DESOBA_DATASET/'
 shadowimage_path=${dataroot}'/ShadowImage'
@@ -70,8 +58,8 @@ CMD="python ../train.py --loadSize ${loadSize} \
     --param_path $param_path\
     --shadowimg_path $shadowimage_path\
     --shadowfree_path $shadowfree_path\
-    --bg_shadow_path $bg_shadow_path\
     --bg_instance_path $bg_instance_path\
+    --bg_shadow_path $bg_shadow_path\
     --new_mask_path $new_mask_path\
 
 

@@ -13,7 +13,8 @@ import cv2
 import time
 import torchvision.transforms.functional as TF
 import torch.nn.functional as F
-import itertools
+# import itertool
+from data.misc import check_img_ext
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -78,13 +79,20 @@ class ShadowGenerationDatasetInference2dataset(BaseDataset):
 
         # for root,_,fnames in sorted(os.walk(self.dir_shadowimg)):
         for root, _, fnames in sorted(os.walk(self.dir_shadowfree)):
-            fname_int = [int(fname.split(".")[0]) for fname in fnames]
-            for name in sorted(fname_int, key=int):
-                fname = str(name) + ".png"
-                if fname.endswith(".png"):
+            print("root {} and fnames {}".format(root, len(fnames)))
+            # fname_int = [int(fname.split(".")[0]) for fname in fnames]
+            fname_str = [fname.split(".")[0] for fname in fnames]
+            # for name in sorted(fname_int, key=int):
+            for name in sorted(fname_str):
+                shadowfree_ext = check_img_ext(self.dir_shadowfree, name)
+                clip_ext = check_img_ext(self.dir_fg_instance, name)
+                if shadowfree_ext is not None and clip_ext is not None:
+                    clip_name = name + clip_ext
+                    shadowfree_name = name + shadowfree_ext
+                    # if fname.endswith(".png"):
                     X = dict()
-                    X["shadowfree_path"] = os.path.join(self.dir_shadowfree, fname)
-                    X["fginstance_path"] = os.path.join(self.dir_fg_instance, fname)
+                    X["shadowfree_path"] = os.path.join(self.dir_shadowfree, shadowfree_name)
+                    X["fginstance_path"] = os.path.join(self.dir_fg_instance, clip_name)
 
                     shadowfree = (
                         Image.open(X["shadowfree_path"])

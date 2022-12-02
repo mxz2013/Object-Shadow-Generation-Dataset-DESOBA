@@ -1,3 +1,4 @@
+import os.path
 from collections import OrderedDict
 from options.test_options import TestOptions
 from data import CreateDataLoader
@@ -23,18 +24,21 @@ if __name__ == '__main__':
     visualizer = Visualizer(opt)
 
     lengths = 0
+    # dictionary of image order with name
+    filename_list = [os.path.splitext(f)[0] for f in os.listdir(opt.shadowfree_path)]
+    filename_list.sort()
+
     for i, data in enumerate(dataset):
+        filename = filename_list[i]
         model.set_input(data)
         model.prediction()
         length, visual_dict = model.get_current_visuals()
-        visualizer.display_current_results(visual_dict, i)
-        lengths+=length
+        visualizer.display_current_results(visual_dict, i, filename)
+        lengths += length
 
     if opt.bos:
-    	print('totally {} test bos images'.format(lengths))
+        print('totally {} test bos images'.format(lengths))
     elif opt.bosfree:
-    	print('totally {} test bosfree images'.format(lengths))
+        print('totally {} test bosfree images'.format(lengths))
     else:
         print('totally {} real composite images'.format(lengths))
-
-

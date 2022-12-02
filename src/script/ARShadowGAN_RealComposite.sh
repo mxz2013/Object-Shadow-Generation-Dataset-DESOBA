@@ -1,7 +1,6 @@
-
 #!/bin/bash
 batchs=1
-GPU=0
+GPU=-1
 lr=0.0002
 loadSize=256
 fineSize=256
@@ -31,7 +30,8 @@ NAME="${model_name}_C${ngf}_D${D}_lrD${lr_D}"
 #####testing for real composite images
 datasetmode=ShadowGenerationDatasetInference2
 # dataroot='../../DESOBA_DATASET/CompositionShadowGeneration-100/OneforegroundObject74/'
-dataroot='../../DESOBA_DATASET/CompositionShadowGeneration-100/TwoforegroundObject26/'
+# dataroot='../../DESOBA_DATASET/CompositionShadowGeneration-100/TwoforegroundObject26/'
+dataroot='../../hungerstation_dataset'
 shadowfree_path=${dataroot}'/shadowfree_img'
 instance_path=${dataroot}'/foreground_object_mask'
 

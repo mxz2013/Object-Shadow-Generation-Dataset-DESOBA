@@ -1,4 +1,3 @@
-
 #!/bin/bash
 batchs=1
 GPU=0

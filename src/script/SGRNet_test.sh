@@ -1,7 +1,6 @@
-
 #!/bin/bash
 batchs=1
-GPU=0
+GPU=-1
 lr=0.0002
 loadSize=256
 fineSize=256
@@ -10,24 +9,18 @@ model=SGRNet
 G='RESNEXT18'
 ngf=32
 
-
 L_shadowrecons=10
 L_imagerecons=10
 L_GAN=0.1
 
 #####network design
-DISPLAY_PORT=8002
+DISPLAY_PORT=8098
 D='pixel'
 lr_D=0.0002
 
 
 #####datset selected
 datasetmode=shadowparam
-
-
-
-
-
 
 
 checkpoint='../../TrainedModels/SGRNet_TrainedModel'

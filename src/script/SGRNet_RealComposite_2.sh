@@ -10,13 +10,12 @@ G='RESNEXT18'
 ngf=32
 num_threads=4
 
-
 L_shadowrecons=10
 L_imagerecons=10
 L_GAN=0.1
 
 #####network design
-DISPLAY_PORT=8002
+DISPLAY_PORT=8098
 D='pixel'
 lr_D=0.0002
 
@@ -27,16 +26,13 @@ model_name=SelfAttention
 NAME="${model_name}_G${G}_C${ngf}_D${D}_lrD${lr_D}"
 
 
-
 #####testing for real composite images
 datasetmode=ShadowGenerationDatasetInference2
-dataroot='../../DESOBA_DATASET/CompositionShadowGeneration-100/OneforegroundObject74'
+# dataroot='../../DESOBA_DATASET/CompositionShadowGeneration-100/OneforegroundObject74'
 #dataroot='../../DESOBA_DATASET/CompositionShadowGeneration-100/TwoforegroundObject26/'
+dataroot='../../hungerstation_dataset'
 shadowfree_path=${dataroot}'/shadowfree_img'
 instance_path=${dataroot}'/foreground_object_mask'
-
-
-
 
 OTHER="--no_crop --no_flip --no_rotate --serial_batches"
 

@@ -16,15 +16,12 @@ random.seed(1)
 if __name__ == '__main__':
 
     opt = TrainOptions().parse()
-    print("SKY opt", opt)
 
     ### dataset [ShadowParamDataset, WeaklyShadowParamDataset]
     data_loader = CreateDataLoader(opt)
-    print("SKY data_loader")
     dataset = data_loader.load_data()
 
     dataset_size = len(data_loader)
-    print("SKY dataset_size {}".format(dataset_size))
 
     #### model [vggface, RESNEXT]
     model = create_model(opt)
@@ -32,7 +29,7 @@ if __name__ == '__main__':
 
 
     ###### visualization
-    # visualizer = Visualizer(opt)
+    visualizer = Visualizer(opt)
 
     total_steps = 0
 
@@ -53,14 +50,14 @@ if __name__ == '__main__':
             if total_steps % opt.display_freq == 0:
                 save_result = total_steps % opt.update_html_freq == 0
                 lenght, visual_dict = model.get_current_visuals()
-                # if lenght>0:
-                #     visualizer.display_current_results(visual_dict, epoch)
+                if lenght>0:
+                    visualizer.display_current_results(visual_dict, epoch)
             if total_steps % opt.print_freq == 0:
                 errors = model.get_current_losses()
                 t = (time.time() - iter_start_time) / opt.batch_size
-                #    visualizer.print_current_errors(epoch, epoch_iter, errors, t)
-                # if opt.display_id > 0:
-                #     visualizer.plot_current_losses(epoch, float(epoch_iter)/dataset_size, opt, errors)
+                visualizer.print_current_errors(epoch, epoch_iter, errors, t)
+                if opt.display_id > 0:
+                    visualizer.plot_current_losses(epoch, float(epoch_iter)/dataset_size, opt, errors)
             ###################################s
 
         if epoch % opt.save_epoch_freq == 0:
