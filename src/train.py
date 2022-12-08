@@ -8,6 +8,7 @@ import visdom
 from util.util import sdmkdir
 import time
 import torch
+import os
 
 import random
 random.seed(1)
@@ -32,13 +33,15 @@ if __name__ == '__main__':
     visualizer = Visualizer(opt)
 
     total_steps = 0
-
+    filename_list = [os.path.splitext(f)[0] for f in os.listdir(opt.shadowfree_path)]
+    filename_list.sort()
     for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
         epoch_start_time = time.time()
         epoch_iter = 0
         model.epoch = epoch
 
         for i, data in enumerate(dataset):
+            filename = filename_list[i]
             iter_start_time = time.time()
             total_steps += opt.batch_size
             epoch_iter += opt.batch_size
@@ -51,7 +54,7 @@ if __name__ == '__main__':
                 save_result = total_steps % opt.update_html_freq == 0
                 lenght, visual_dict = model.get_current_visuals()
                 if lenght>0:
-                    visualizer.display_current_results(visual_dict, epoch)
+                    visualizer.display_current_results(visual_dict, epoch, filename)
             if total_steps % opt.print_freq == 0:
                 errors = model.get_current_losses()
                 t = (time.time() - iter_start_time) / opt.batch_size
