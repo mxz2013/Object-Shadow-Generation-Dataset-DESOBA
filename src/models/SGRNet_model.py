@@ -16,9 +16,9 @@ import sys
 sys.path.append('../pytorch_ssim/')
 # import pytorch_ssim
 import pytorch_msssim
+from skimage.metrics import mean_squared_error
 import torch
 from sklearn.metrics import balanced_accuracy_score
-from skimage.metrics import mean_squared_error
 import util.ssim as ssim
 
 

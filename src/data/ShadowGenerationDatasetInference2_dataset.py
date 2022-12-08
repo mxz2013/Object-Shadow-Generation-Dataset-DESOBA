@@ -77,7 +77,6 @@ class ShadowGenerationDatasetInference2dataset(BaseDataset):
         self.birdy_deshadoweds = []
         self.birdy_fg_instances = []
 
-        # for root,_,fnames in sorted(os.walk(self.dir_shadowimg)):
         for root, _, fnames in sorted(os.walk(self.dir_shadowfree)):
             print("root {} and fnames {}".format(root, len(fnames)))
             # fname_int = [int(fname.split(".")[0]) for fname in fnames]
